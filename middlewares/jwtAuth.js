@@ -18,7 +18,7 @@ const jwtAuth = () => {
         err.message = "ACCESS_TOKEN_EXP";
       } else if (
         err.message == "invalid signature" ||
-        err.message == "jwt malfformed" ||
+        err.message == "jwt malformed" ||
         err.message == "invalid token" ||
         err.message == "jwt must be provided"
       ) {
