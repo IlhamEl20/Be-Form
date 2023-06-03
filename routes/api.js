@@ -5,6 +5,7 @@ import FormController from "../controllers/FormController.js";
 import swaggerUi from "swagger-ui-express";
 import { createRequire } from "module";
 import QuestionController from "../controllers/QuestionController.js";
+import OptionController from "../controllers/OptionController.js";
 const router = express.Router();
 //Swagger
 // const require = createRequire(import.meta.url);
@@ -29,5 +30,12 @@ router.get("/forms/:id/questions", jwtAuth(), QuestionController.index);
 router.post("/forms/:id/questions", jwtAuth(), QuestionController.store);
 router.put("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.update);
 router.delete("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.destroy);
+
+// OPTION
+// router.get("/forms/:id/questions", jwtAuth(), OptionController.index);
+router.post("/forms/:id/questions/:questionId/options", jwtAuth(), OptionController.store);
+// router.put("/forms/:id/questions/:questionId/options/:optionId", jwtAuth(), OptionController.update);
+router.put('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), OptionController.update); //update options
+
 
 export default router;
