@@ -8,10 +8,10 @@ import QuestionController from "../controllers/QuestionController.js";
 import OptionController from "../controllers/OptionController.js";
 const router = express.Router();
 //Swagger
-// const require = createRequire(import.meta.url);
-// const swaggerDocument = require("../swagger.json");
-// router.use("/api-docs", swaggerUi.serve);
-// router.get("/api-docs", swaggerUi.setup(swaggerDocument));
+const require = createRequire(import.meta.url);
+const swaggerDocument = require("../swagger.json");
+router.use("/api-docs", swaggerUi.serve);
+router.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
 //auth
 router.post("/register", AuthController.register);
@@ -32,10 +32,9 @@ router.put("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.upd
 router.delete("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.destroy);
 
 // OPTION
-// router.get("/forms/:id/questions", jwtAuth(), OptionController.index);
 router.post("/forms/:id/questions/:questionId/options", jwtAuth(), OptionController.store);
-// router.put("/forms/:id/questions/:questionId/options/:optionId", jwtAuth(), OptionController.update);
 router.put('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), OptionController.update); //update options
+router.delete('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), OptionController.destroy); //update options
 
 
 export default router;

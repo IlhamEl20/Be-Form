@@ -29,11 +29,12 @@ const Schema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: {
       currentTime: () => Math.floor(Date.now() / 1000),
     },
   }
 );
 
-Schema.plugin(mongoosePaginate)
+Schema.plugin(mongoosePaginate);
 export default mongoose.model("Form", Schema);
