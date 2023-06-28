@@ -1,5 +1,6 @@
 import mongoose, { deleteModel } from "mongoose";
 import Form from "../models/Form.js";
+import User from "../models/User.js";
 
 class FormController {
   async index(req, res) {
@@ -127,6 +128,42 @@ class FormController {
       return res.status(200).json({
         status: true,
         message: "FORM_DELETE_SUCCESS",
+        form,
+      });
+    } catch (err) {
+      return res.status(err.code || 500).json({
+        status: false,
+        message: err.message,
+      });
+    }
+  }
+  async showToUser(req, res) {
+    try {
+      if (!req.params.id) {
+        throw { code: 400, message: "ID_REQUIRED" };
+      }
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        throw { code: 400, message: "INVALID_FORM_ID" };
+      }
+      const form = await Form.findOne({
+        _id: req.params.id,
+      });
+      if (!form) {
+        throw { code: 404, message: "FORM_NOT_FOUND" };
+      }
+      if (req.jwt.id != form.userId && form.public === false) {
+        const user = await User.findOne({ _id: req.jwt.id });
+
+        if (!form.invites.includes(user.email)) {
+          throw { code: 400, message: "YOU_ARE_NO_INVITE" };
+        }
+      }
+
+      form.invites = [];
+
+      return res.status(200).json({
+        status: true,
+        message: "FORM_FOUND",
         form,
       });
     } catch (err) {

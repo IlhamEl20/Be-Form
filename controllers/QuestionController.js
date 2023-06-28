@@ -16,10 +16,10 @@ class QuestionsController {
         _id: req.params.id,
         userId: req.jwt.id,
       });
-    //   const form = await Form.findOne({
-    //     _id: req.params.id,
-    //     userId: req.jwt.id,
-    //   });.select("questions");
+      //   const form = await Form.findOne({
+      //     _id: req.params.id,
+      //     userId: req.jwt.id,
+      //   });.select("questions");
       if (!form) {
         throw { code: 404, message: "QUESTION_NOT_FOUND" };
       }
@@ -68,7 +68,7 @@ class QuestionsController {
       );
 
       if (!question) {
-        throw { code: 500, message: "ADD_QUESTION_FAILED" };
+        throw { code: 400, message: "ADD_QUESTION_FAILED" };
       }
 
       return res.status(200).json({
@@ -77,6 +77,7 @@ class QuestionsController {
         question: newQuestion,
       });
     } catch (err) {
+      console.log(err);
       return res.status(err.code || 500).json({
         status: false,
         message: err.message,

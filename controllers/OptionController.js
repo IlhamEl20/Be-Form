@@ -176,7 +176,6 @@ class OptionController {
         question
       });
     } catch (err) {
-      console.log(err);
       res.status(err.code || 500).json({
         status: false,
         message: err.message,
