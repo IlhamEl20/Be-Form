@@ -7,6 +7,7 @@ import { createRequire } from "module";
 import QuestionController from "../controllers/QuestionController.js";
 import OptionController from "../controllers/OptionController.js";
 import AnswerController from "../controllers/AnswerController.js";
+import InviteController from "../controllers/InviteController.js";
 const router = express.Router();
 //Swagger
 const require = createRequire(import.meta.url);
@@ -41,5 +42,11 @@ router.delete('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), O
 
 //Answers
 router.post("/answers/:formId", jwtAuth(), AnswerController.store);
+
+//invites
+router.post("/forms/:id/invites", jwtAuth(), InviteController.store);
+router.delete("/forms/:id/invites", jwtAuth(), InviteController.destroy);
+router.get("/forms/:id/invites", jwtAuth(), InviteController.index);
+
 
 export default router;

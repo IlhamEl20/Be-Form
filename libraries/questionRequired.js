@@ -13,4 +13,5 @@ const questionRequiredButEmpty = async (form, answers) => {
   });
   return found.length > 0 ? true : false;
 };
+
 export default questionRequiredButEmpty;

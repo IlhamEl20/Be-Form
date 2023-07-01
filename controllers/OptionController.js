@@ -40,9 +40,8 @@ class OptionController {
         },
         { new: true }
       );
-
       if (!question) {
-        throw { code: 500, message: "ADD_OPTION_FAILED" };
+        throw { code: 400, message: "ADD_OPTION_FAILED" };
       }
 
       return res.status(200).json({
@@ -173,7 +172,7 @@ class OptionController {
       res.status(200).json({
         status: true,
         message: "DELETE_OPTIONS_SUCCESS",
-        question
+        question,
       });
     } catch (err) {
       res.status(err.code || 500).json({
