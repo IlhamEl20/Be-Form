@@ -8,6 +8,7 @@ import QuestionController from "../controllers/QuestionController.js";
 import OptionController from "../controllers/OptionController.js";
 import AnswerController from "../controllers/AnswerController.js";
 import InviteController from "../controllers/InviteController.js";
+import ResponseController from "../controllers/ResponseController.js";
 const router = express.Router();
 //Swagger
 const require = createRequire(import.meta.url);
@@ -18,7 +19,7 @@ router.get("/api-docs", swaggerUi.setup(swaggerDocument));
 //auth
 router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
-router.post("/refresh-token", jwtAuth(), AuthController.refreshToken);
+router.post("/refresh-token", AuthController.refreshToken);
 
 //form
 router.get("/forms", jwtAuth(), FormController.index);
@@ -47,6 +48,11 @@ router.post("/answers/:formId", jwtAuth(), AnswerController.store);
 router.post("/forms/:id/invites", jwtAuth(), InviteController.store);
 router.delete("/forms/:id/invites", jwtAuth(), InviteController.destroy);
 router.get("/forms/:id/invites", jwtAuth(), InviteController.index);
+
+//Response
+router.get("/responses/:formId/lists", jwtAuth(), ResponseController.lists);
+router.get("/responses/:formId/summaries", jwtAuth(), ResponseController.summaries);
+
 
 
 export default router;

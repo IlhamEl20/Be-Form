@@ -3,6 +3,7 @@ import emailExist from "../libraries/emailExist.js";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import isEmailValid from "../libraries/isEmailValid.js";
 const env = dotenv.config().parsed;
 
 const generateAccessToken = async (payload) => {
@@ -25,6 +26,9 @@ class AuthController {
       if (!req.body.email) {
         throw { code: 400, message: "EMAIL_IS_REQUIRED" };
       }
+      if (!isEmailValid(req.body.email)) {
+        throw { code: 400, message: "INVALID_EMAIL" };
+      }
       if (!req.body.password) {
         throw { code: 400, message: "PASSWORD_IS_REQUIRED" };
       }
@@ -44,13 +48,18 @@ class AuthController {
         password: hash,
       });
       if (!user) {
-        throw { code: 500, message: "USER_REGIS_FAILD" };
+        throw { code: 400, message: "USER_REGIS_FAILED" };
       }
-
+      //generte token
+      let payload = { id: user.id };
+      const accessToken = await generateAccessToken(payload);
+      const refreshToken = await generateRefreshToken(payload);
       return res.status(200).json({
         status: true,
         message: "USER_REGIS_SUCCESS",
-        user,
+        fullname: user.fullname,
+        accessToken,
+        refreshToken,
       });
     } catch (err) {
       return res.status(err.code || 500).json({

@@ -7,7 +7,7 @@ class QuestionsController {
   async index(req, res) {
     try {
       if (!req.params.id) {
-        throw { code: 428, message: "FORM_ID_REQUIRED" };
+        throw { code: 400, message: "FORM_ID_REQUIRED" };
       }
       if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
         throw { code: 400, message: "INVALID_ID" };

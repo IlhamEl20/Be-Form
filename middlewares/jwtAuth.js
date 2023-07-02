@@ -14,14 +14,16 @@ const jwtAuth = () => {
       req.jwt = verify; // req jwt data user login
       next();
     } catch (err) {
+      const errJwt = [
+        "invalid signature",
+        "jwt malformed",
+        "invalid token",
+        "jwt must be provided",
+      ];
       if (err.message == "jwt expired") {
         err.message = "ACCESS_TOKEN_EXP";
-      } else if (
-        err.message == "invalid signature" ||
-        err.message == "jwt malformed" ||
-        err.message == "invalid token" ||
-        err.message == "jwt must be provided"
-      ) {
+        err.code = 401;
+      } else if (errJwt.includes(err.message)) {
         err.message = "INVALID_REFRESH_TOKEN";
       }
       return res.status(err.code || 500).json({
