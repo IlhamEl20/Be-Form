@@ -113,7 +113,10 @@
                   "type": "string"
               }
           }
-          }
+          },
+           "500": {
+            "description": "Bad Req"
+           }
         }
       }
     },
