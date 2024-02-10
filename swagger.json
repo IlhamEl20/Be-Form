@@ -13,8 +13,8 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "127.0.0.1:8000",
-  "basePath": "/user",
+  "host": "busy-gray-reindeer-kilt.cyclic.app",
+  "basePath": "",
   "tags": [
     {
       "name": "Login",
@@ -54,13 +54,19 @@
           }
         ],
         "responses": {
-          "default": {
+          "200": {
             "description": "successful operation"
+          },
+          "401": {
+            "description": "gagal"
+          },
+          "400": {
+            "description": "validasi gagal"
           }
         }
       }
     },
-    "/addRecord": {
+    "/register": {
       "post": {
         "security": [
           {
@@ -84,8 +90,29 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "successful operation"
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+              }
+          }
+          },
+          "401": {
+            "description": "gagal",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+              }
+          }
+          },
+          "400": {
+            "description": "validasi gagal",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                  "type": "string"
+              }
+          }
           }
         }
       }
@@ -172,30 +199,30 @@
     "createRecord": {
       "type": "object",
       "properties": {
-        "name": {
+        "fullname": {
           "type": "string"
         },
         "email": {
           "type": "string"
         },
-        "city": {
+        "password": {
           "type": "string"
         }
       },
       "xml": {
-        "name": "User"
+        "name": "register"
       }
     },
     "updateRecord": {
       "type": "object",
       "properties": {
-        "name": {
+        "fullname": {
           "type": "string"
         },
         "email": {
           "type": "string"
         },
-        "city": {
+        "password": {
           "type": "string"
         }
       },
