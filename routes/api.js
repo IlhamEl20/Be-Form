@@ -9,7 +9,6 @@ import OptionController from "../controllers/OptionController.js";
 import AnswerController from "../controllers/AnswerController.js";
 import InviteController from "../controllers/InviteController.js";
 import ResponseController from "../controllers/ResponseController.js";
-import belajar from "../controllers/belajar.js";
 const router = express.Router();
 //Swagger
 const require = createRequire(import.meta.url);
