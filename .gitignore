@@ -1,6 +1,8 @@
 .DS_Store
 secrets.txt
 .env
+/node_modules
+node_modules/
 
 #This is comments(# used for comments)
 

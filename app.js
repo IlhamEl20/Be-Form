@@ -10,7 +10,8 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "url" }));
+app.use(cors({ origin: "http://localhost:7000" }));
+
 // Set up rate limiter: maximum of twenty requests per minute
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
