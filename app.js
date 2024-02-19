@@ -10,7 +10,20 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:7000" }));
+const allowedOrigins = process.env.CORS_ORIGIN.split(",");
+// app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Memeriksa apakah origin yang diminta ada dalam daftar domain yang diizinkan
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origin not allowed by CORS"));
+      }
+    },
+  })
+);
 
 // Set up rate limiter: maximum of twenty requests per minute
 const limiter = rateLimit({
