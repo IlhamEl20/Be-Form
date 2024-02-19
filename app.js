@@ -41,6 +41,6 @@ app.use((req, res) => {
 //database
 db();
 
-app.listen(env.APP_PORT, () => {
-  console.log(`server start ${env.APP_PORT}`);
+app.listen(process.env.APP_PORT, () => {
+  console.log(`server start ${process.env.APP_PORT}`);
 });
