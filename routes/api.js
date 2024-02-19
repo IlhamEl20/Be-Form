@@ -29,17 +29,36 @@ router.put("/forms/:id", jwtAuth(), FormController.update);
 router.delete("/forms/:id", jwtAuth(), FormController.destroy);
 router.get("/forms/:id/users", jwtAuth(), FormController.showToUser);
 
-
 //Question
 router.get("/forms/:id/questions", jwtAuth(), QuestionController.index);
 router.post("/forms/:id/questions", jwtAuth(), QuestionController.store);
-router.put("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.update);
-router.delete("/forms/:id/questions/:questionId", jwtAuth(), QuestionController.destroy);
+router.put(
+  "/forms/:id/questions/:questionId",
+  jwtAuth(),
+  QuestionController.update
+);
+router.delete(
+  "/forms/:id/questions/:questionId",
+  jwtAuth(),
+  QuestionController.destroy
+);
 
 // OPTION
-router.post("/forms/:id/questions/:questionId/options", jwtAuth(), OptionController.store);
-router.put('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), OptionController.update); //update options
-router.delete('/forms/:id/questions/:questionId/options/:optionId', jwtAuth(), OptionController.destroy); //update options
+router.post(
+  "/forms/:id/questions/:questionId/options",
+  jwtAuth(),
+  OptionController.store
+);
+router.put(
+  "/forms/:id/questions/:questionId/options/:optionId",
+  jwtAuth(),
+  OptionController.update
+); //update options
+router.delete(
+  "/forms/:id/questions/:questionId/options/:optionId",
+  jwtAuth(),
+  OptionController.destroy
+); //update options
 
 //Answers
 router.post("/answers/:formId", jwtAuth(), AnswerController.store);
@@ -51,8 +70,10 @@ router.get("/forms/:id/invites", jwtAuth(), InviteController.index);
 
 //Response
 router.get("/responses/:formId/lists", jwtAuth(), ResponseController.lists);
-router.get("/responses/:formId/summaries", jwtAuth(), ResponseController.summaries);
-
-
+router.get(
+  "/responses/:formId/summaries",
+  jwtAuth(),
+  ResponseController.summaries
+);
 
 export default router;
