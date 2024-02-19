@@ -7,13 +7,13 @@ import isEmailValid from "../libraries/isEmailValid.js";
 const env = dotenv.config().parsed;
 
 const generateAccessToken = async (payload) => {
-  return Jwt.sign(payload, env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: env.JWT_ACCESS_TOKEN_EXP_TIME,
+  return Jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_ACCESS_TOKEN_EXP_TIME,
   });
 };
 const generateRefreshToken = async (payload) => {
-  return Jwt.sign(payload, env.JWT_REFRESH_TOKEN_SECRET, {
-    expiresIn: env.JWT_REFRESH_TOKEN_EXP_TIME,
+  return Jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_TOKEN_EXP_TIME,
   });
 };
 
@@ -113,7 +113,7 @@ class AuthController {
       //veri refesh token
       const verify = await Jwt.verify(
         req.body.refreshToken,
-        env.JWT_REFRESH_TOKEN_SECRET
+        process.env.JWT_REFRESH_TOKEN_SECRET
       );
       let payload = { id: verify.id };
       const accessToken = await generateAccessToken(payload);
