@@ -104,6 +104,7 @@
               "Access-Control-Allow-Origin": {
                   "type": "string"
               }
+
           }
           },
           "400": {
@@ -113,7 +114,10 @@
                   "type": "string"
               }
           }
-          }
+          },
+           "500": {
+            "description": "Bad Req"
+           }
         }
       }
     },
