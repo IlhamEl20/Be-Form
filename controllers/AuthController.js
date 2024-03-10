@@ -4,37 +4,36 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import isEmailValid from "../libraries/isEmailValid.js";
-const env = dotenv.config().parsed;
+import UserAccess from "../models/UserAccess.js";
+import Token from "../libraries/token.js";
+import Mongoose from "mongoose";
 
-const generateAccessToken = async (payload) => {
-  return Jwt.sign(payload, env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: env.JWT_ACCESS_TOKEN_EXP_TIME,
-  });
-};
-const generateRefreshToken = async (payload) => {
-  return Jwt.sign(payload, env.JWT_REFRESH_TOKEN_SECRET, {
-    expiresIn: env.JWT_REFRESH_TOKEN_EXP_TIME,
-  });
-};
+// const generateAccessToken = async (payload) => {
+//   return Jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, {
+//     expiresIn: process.env.JWT_ACCESS_TOKEN_EXP_TIME,
+//   });
+// };
+// const generateRefreshToken = async (payload) => {
+//   return Jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET, {
+//     expiresIn: process.env.JWT_REFRESH_TOKEN_EXP_TIME,
+//   });
+// };
 
 class AuthController {
   async register(req, res) {
     try {
       if (!req.body.fullname) {
         throw { code: 400, message: "FULLNAME_IS_REQUIRED" };
-      }
-      if (!req.body.email) {
+      } else if (!req.body.email) {
         throw { code: 400, message: "EMAIL_IS_REQUIRED" };
-      }
-      if (!isEmailValid(req.body.email)) {
+      } else if (!req.body.password) {
+        throw { code: 400, message: "PASSWORD_IS_REQUIRED" };
+      } else if (req.body.password.length < 6) {
+        throw { code: 400, message: "PASSWORD_MINIMUM_6_CHARACTERS" };
+      } else if (!isEmailValid(req.body.email)) {
         throw { code: 400, message: "INVALID_EMAIL" };
       }
-      if (!req.body.password) {
-        throw { code: 400, message: "PASSWORD_IS_REQUIRED" };
-      }
-      if (req.body.password.length < 6) {
-        throw { code: 400, message: "PASSOWRD_KURNAG_DARI_6" };
-      }
+
       const isemailExist = await emailExist(req.body.email);
       if (isemailExist) {
         throw { code: 409, message: "EMAIL_ALREADY_EXIST" };
@@ -50,10 +49,23 @@ class AuthController {
       if (!user) {
         throw { code: 400, message: "USER_REGIS_FAILED" };
       }
+
+      const sessionId = new Mongoose.Types.ObjectId();
+      //store user access
+      const userAccess = await new UserAccess({
+        userId: user._id,
+        sessionId: sessionId,
+        type: "login",
+        statusToken: true,
+        statusLogin: true,
+        userAgent: req.headers["user-agent"],
+      }).save();
+
       //generte token
-      let payload = { id: user.id };
-      const accessToken = await generateAccessToken(payload);
-      const refreshToken = await generateRefreshToken(payload);
+      const token = new Token();
+      let payload = { id: userAccess._id };
+      const accessToken = await token.AccessToken(payload);
+      const refreshToken = await token.RefreshToken(payload);
       return res.status(200).json({
         status: true,
         message: "USER_REGIS_SUCCESS",
@@ -61,10 +73,13 @@ class AuthController {
         accessToken,
         refreshToken,
       });
-    } catch (err) {
-      return res.status(err.code || 500).json({
+    } catch (error) {
+      if (error.code > 500) {
+        error.code = 400;
+      }
+      return res.status(error.code || 500).json({
         status: false,
-        message: err.message,
+        message: error.message,
       });
     }
   }
@@ -72,25 +87,41 @@ class AuthController {
     try {
       if (!req.body.email) {
         throw { code: 400, message: "EMAIL_IS_REQUIRED" };
-      }
-      if (!req.body.password) {
+      } else if (!req.body.password) {
         throw { code: 400, message: "PASSWORD_IS_REQUIRED" };
       }
+
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
         throw { code: 404, message: "USER_NOT_FOUND" };
       }
+
       const isPasswordValid = await bcrypt.compareSync(
         req.body.password,
         user.password
       );
       if (!isPasswordValid) {
-        throw { code: 400, message: "PASSWORD_INVALID" };
+        throw { code: 400, message: "INVALID_PASSWORD" };
       }
-      let payload = { id: user.id };
 
-      const accessToken = await generateAccessToken(payload);
-      const refreshToken = await generateRefreshToken(payload);
+      const sessionId = new Mongoose.Types.ObjectId();
+
+      //store user access
+      const userAccess = await new UserAccess({
+        userId: user._id,
+        sessionId: sessionId,
+        type: "login",
+        statusToken: true,
+        statusLogin: true,
+        userAgent: req.headers["user-agent"],
+      }).save();
+
+      //generate token
+      const token = new Token();
+      let payload = { _id: userAccess._id };
+      const accessToken = await token.AccessToken(payload);
+      const refreshToken = await token.RefreshToken(payload);
+
       return res.status(200).json({
         status: true,
         message: "USER_LOGIN_SUCCESS",
@@ -98,13 +129,14 @@ class AuthController {
         accessToken,
         refreshToken,
       });
-    } catch (err) {
-      return res.status(err.code || 500).json({
+    } catch (error) {
+      return res.status(error.code || 500).json({
         status: false,
-        message: err.message,
+        message: error.message,
       });
     }
   }
+
   async refreshToken(req, res) {
     try {
       if (!req.body.refreshToken) {
@@ -113,11 +145,45 @@ class AuthController {
       //veri refesh token
       const verify = await Jwt.verify(
         req.body.refreshToken,
-        env.JWT_REFRESH_TOKEN_SECRET
+        process.env.JWT_REFRESH_TOKEN_SECRET
       );
-      let payload = { id: verify.id };
-      const accessToken = await generateAccessToken(payload);
-      const refreshToken = await generateRefreshToken(payload);
+      //if token from other device then push logout
+      const checkUserAccess = await UserAccess.findOne({
+        _id: verify._id,
+        userAgent: req.headers["user-agent"],
+      });
+
+      if (!checkUserAccess) {
+        throw { message: "TOKEN_FROM_OTHER_DEVICES" };
+      }
+      //update status last userAccess
+      const userAccess = await UserAccess.findOneAndUpdate(
+        {
+          _id: verify._id,
+          statusToken: true,
+        },
+        { statusToken: false },
+        { new: true }
+      );
+      //check is accessId active not found
+      if (!userAccess) {
+        throw { message: "jwt expired" };
+      }
+      //store user access
+      const newUserAccess = await new UserAccess({
+        userId: userAccess.userId,
+        sessionId: userAccess.sessionId,
+        type: "refresh-token",
+        statusToken: true,
+        userAgent: req.headers["user-agent"],
+      }).save();
+
+      //generate token
+      const token = new Token();
+      let payload = { id: newUserAccess._id };
+      const accessToken = await token.AccessToken(payload);
+      const refreshToken = await token.RefreshToken(payload);
+
       return res.status(200).json({
         status: true,
         message: "REFRESH_TOKEN_SUCCESS",
@@ -141,5 +207,60 @@ class AuthController {
       });
     }
   }
+  async logout(req, res) {
+    try {
+      //update status last userAccess
+      const userAccess = await UserAccess.findOneAndUpdate(
+        {
+          _id: req.jwt._id,
+          statusToken: true,
+        },
+        {
+          statusToken: false,
+        },
+        { new: true }
+      );
+
+      //check is UserAccessId active not found
+      if (!userAccess) {
+        throw { message: "jwt expired" };
+      }
+
+      //set statusLogin false
+      const changeStatusLogin = await UserAccess.findOneAndUpdate(
+        {
+          sessionId: userAccess.sessionId,
+          statusLogin: true,
+        },
+        {
+          statusLogin: false,
+        },
+        { new: true }
+      );
+
+      //check is UserAccessId active not found
+      if (!changeStatusLogin) {
+        throw { message: "SESSION_ID_NOT_FOUND" };
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: "LOGOUT_SUCCESS",
+      });
+    } catch (error) {
+      if (error.message == "jwt expired") {
+        error.code = 401;
+        error.message = "ACCESS_TOKEN_EXPIRED";
+      } else if (errorJwt.includes(error.message)) {
+        error.message = "INVALID_ACCESS_TOKEN";
+      }
+
+      return res.status(error.code || 500).json({
+        status: false,
+        message: error.message,
+      });
+    }
+  }
 }
+
 export default new AuthController();

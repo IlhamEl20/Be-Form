@@ -1,18 +1,9 @@
-import mongoose from "mongoose";
+import Mongoose from "mongoose";
 import MongoosePaginate from "mongoose-paginate-v2";
 
-const Schema = new mongoose.Schema(
+const Schema = new Mongoose.Schema(
   {
-    fullname: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
+    role: {
       type: String,
       required: true,
     },
@@ -35,5 +26,7 @@ const Schema = new mongoose.Schema(
     },
   }
 );
+
 Schema.plugin(MongoosePaginate);
-export default mongoose.model("User", Schema);
+
+export default Mongoose.model("Roles", Schema);

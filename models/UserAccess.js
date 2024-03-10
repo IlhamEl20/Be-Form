@@ -1,26 +1,31 @@
-import mongoose from "mongoose";
+import Mongoose from "mongoose";
 import MongoosePaginate from "mongoose-paginate-v2";
 
-const Schema = new mongoose.Schema(
+const Schema = new Mongoose.Schema(
   {
-    fullname: {
+    userId: {
+      type: Mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    sessionId: {
+      type: Mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    userAgent: {
       type: String,
       required: true,
     },
-    email: {
+    type: {
       type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
+      enum: ["login", "refresh-token"],
+      default: "login",
       required: true,
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
-      required: true,
+    statusToken: {
+      type: Boolean,
+    },
+    statusLogin: {
+      type: Boolean,
     },
     createdAt: {
       type: Number,
@@ -35,5 +40,7 @@ const Schema = new mongoose.Schema(
     },
   }
 );
+
 Schema.plugin(MongoosePaginate);
-export default mongoose.model("User", Schema);
+
+export default Mongoose.model("UserAccess", Schema);

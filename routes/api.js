@@ -9,6 +9,8 @@ import OptionController from "../controllers/OptionController.js";
 import AnswerController from "../controllers/AnswerController.js";
 import InviteController from "../controllers/InviteController.js";
 import ResponseController from "../controllers/ResponseController.js";
+import ProfileController from "../controllers/ProfileController.js";
+
 const router = express.Router();
 //Swagger
 const require = createRequire(import.meta.url);
@@ -20,6 +22,16 @@ router.get("/api-docs", swaggerUi.setup(swaggerDocument));
 router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
 router.post("/refresh-token", AuthController.refreshToken);
+router.post("/logout", [jwtAuth()], AuthController.logout);
+
+//Profile
+router.get("/profiles/user-access", [jwtAuth()], ProfileController.userAccess);
+router.get("/profiles/log-login", [jwtAuth()], ProfileController.logLogin);
+router.post(
+  "/profiles/remote-logout/:userAccessId",
+  [jwtAuth()],
+  ProfileController.remoteLogout
+);
 
 //form
 router.get("/forms", jwtAuth(), FormController.index);

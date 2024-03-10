@@ -1,18 +1,41 @@
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import UserAccess from "../models/UserAccess.js";
 
 const env = dotenv.config().parsed;
 
 const jwtAuth = () => {
   return async (req, res, next) => {
     try {
-      if (!req.headers.authorization) {
-        throw { code: 401, message: "UNAUTHORIZED" };
+      if (req.headers.authorization) {
+        const token = req.headers.authorization.split(" ")[1];
+
+        const jwtVerified = Jwt.verify(token, env.JWT_ACCESS_TOKEN_SECRET);
+
+        if (jwtVerified) {
+          //get UserAccess
+          const userAccess = await UserAccess.findOne({
+            _id: jwtVerified._id,
+            statusToken: true,
+          });
+          console.log(userAccess);
+          if (!userAccess) {
+            throw { message: "TOKEN_IS_NOT_VALID" };
+          }
+
+          if (userAccess.userAgent != req.headers["user-agent"]) {
+            throw { message: "TOKEN_FROM_OTHER_DEVICES" };
+          }
+
+          //add user_id to jwt, for backend only
+          jwtVerified.userId = userAccess.userId;
+
+          req.jwt = jwtVerified;
+          next();
+        }
+      } else {
+        throw { message: "TOKEN_REQUIRED" };
       }
-      const token = req.headers.authorization.split(" ")[1]; //Bearer <token>
-      const verify = Jwt.verify(token, env.JWT_ACCESS_TOKEN_SECRET);
-      req.jwt = verify; // req jwt data user login
-      next();
     } catch (err) {
       const errJwt = [
         "invalid signature",
