@@ -18,7 +18,7 @@ const run = async (limit) => {
     }
     const fakeData = await Answer.insertMany(data);
     if (fakeData) {
-      console.log(fakeData);
+      // console.log(fakeData);
       process.exit();
     }
   } catch (error) {

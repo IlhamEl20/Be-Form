@@ -32,7 +32,7 @@ class ProfileController {
         type: "login",
         statusLogin: true,
       });
-      console.log(req.jwt.userId);
+      // console.log(req.jwt.userId);
       return res.status(200).json({
         status: true,
         message: "USER_ACCESS_SUCCESS",

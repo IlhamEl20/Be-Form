@@ -5,7 +5,7 @@ import UserAccess from "../models/UserAccess.js";
 const env = dotenv.config().parsed;
 
 const jwtAuth = () => {
-  return async (req, res, next) => {
+  return async function (req, res, next) {
     try {
       if (req.headers.authorization) {
         const token = req.headers.authorization.split(" ")[1];
@@ -18,7 +18,6 @@ const jwtAuth = () => {
             _id: jwtVerified._id,
             statusToken: true,
           });
-          console.log(userAccess);
           if (!userAccess) {
             throw { message: "TOKEN_IS_NOT_VALID" };
           }
@@ -37,21 +36,15 @@ const jwtAuth = () => {
         throw { message: "TOKEN_REQUIRED" };
       }
     } catch (err) {
-      const errJwt = [
-        "invalid signature",
-        "jwt malformed",
-        "invalid token",
-        "jwt must be provided",
-      ];
       if (err.message == "jwt expired") {
-        err.message = "ACCESS_TOKEN_EXP";
-        err.code = 401;
-      } else if (errJwt.includes(err.message)) {
-        err.message = "INVALID_REFRESH_TOKEN";
+        err = "TOKEN_EXPIRED";
+      } else {
+        err = err.message || "TOKEN_IS_NOT_VALID";
       }
-      return res.status(err.code || 500).json({
-        status: false,
-        message: err.message,
+
+      return res.status(401).json({
+        success: false,
+        message: err,
       });
     }
   };

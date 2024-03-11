@@ -180,7 +180,7 @@ class AuthController {
 
       //generate token
       const token = new Token();
-      let payload = { id: newUserAccess._id };
+      let payload = { _id: newUserAccess._id };
       const accessToken = await token.AccessToken(payload);
       const refreshToken = await token.RefreshToken(payload);
 

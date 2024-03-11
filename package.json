@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.1",
     "mongoose-paginate-v2": "^1.7.1",
+    "node-cron": "^3.0.3",
     "swagger-ui-express": "^4.6.3"
   },
   "devDependencies": {
