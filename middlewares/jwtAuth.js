@@ -10,7 +10,10 @@ const jwtAuth = () => {
       if (req.headers.authorization) {
         const token = req.headers.authorization.split(" ")[1];
 
-        const jwtVerified = Jwt.verify(token, env.JWT_ACCESS_TOKEN_SECRET);
+        const jwtVerified = Jwt.verify(
+          token,
+          process.env.JWT_ACCESS_TOKEN_SECRET
+        );
 
         if (jwtVerified) {
           //get UserAccess
