@@ -91,7 +91,7 @@ class FormController {
         throw { code: 400, message: "INVALID_FORM_ID" };
       }
       const form = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         req.body,
         { new: true }
       );

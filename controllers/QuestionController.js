@@ -62,7 +62,7 @@ class QuestionsController {
 
       //update form
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         { $push: { questions: newQuestion } },
         { new: true }
       );
@@ -112,7 +112,7 @@ class QuestionsController {
         field["questions.$[indexQuestion].type"] = req.body.type;
       }
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         { $set: field },
         {
           arrayFilters: [
@@ -146,7 +146,7 @@ class QuestionsController {
   async destroy(req, res) {
     try {
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         {
           $pull: {
             questions: {

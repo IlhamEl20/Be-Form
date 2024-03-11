@@ -66,7 +66,7 @@ class InviteController {
         throw { code: 400, message: "INVALID_EMAIL" };
       }
       const invites = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         { $push: { invites: req.body.email } },
         { new: true }
       );
@@ -108,7 +108,7 @@ class InviteController {
         throw { code: 400, message: "EMAIL_NOT_FOUND" };
       }
       const invites = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         { $pull: { invites: req.body.email } },
         { new: true }
       );

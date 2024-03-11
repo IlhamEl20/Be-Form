@@ -27,7 +27,7 @@ class OptionController {
 
       //update form
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         { $push: { "questions.$[indexQuestion].options": option } },
         {
           arrayFilters: [
@@ -80,7 +80,7 @@ class OptionController {
 
       //update Option
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         {
           $set: {
             "questions.$[indexQuestion].options.$[indexOption].value":
@@ -146,7 +146,7 @@ class OptionController {
 
       //update Option
       const question = await Form.findOneAndUpdate(
-        { _id: req.params.id, userId: req.jwt.id },
+        { _id: req.params.id, userId: req.jwt.userId },
         {
           $pull: {
             "questions.$[indexQuestion].options": {
