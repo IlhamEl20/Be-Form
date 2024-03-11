@@ -14,11 +14,11 @@ class QuestionsController {
       }
       const form = await Form.findOne({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       });
       //   const form = await Form.findOne({
       //     _id: req.params.id,
-      //     userId: req.jwt.id,
+      //      userId: req.jwt.userId,
       //   });.select("questions");
       if (!form) {
         throw { code: 404, message: "QUESTION_NOT_FOUND" };

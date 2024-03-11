@@ -10,7 +10,7 @@ class FormController {
 
       const form = await Form.paginate(
         {
-          userId: req.jwt.id,
+          userId: req.jwt.userId,
         },
         { limit: limit, page: page }
       );
@@ -34,7 +34,7 @@ class FormController {
   async store(req, res) {
     try {
       const form = await Form.create({
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
         title: "Untitled Form",
         description: null,
         public: true,
@@ -64,7 +64,7 @@ class FormController {
       }
       const form = await Form.findOne({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       });
 
       if (!form) {
@@ -120,7 +120,7 @@ class FormController {
       }
       const form = await Form.findOneAndDelete({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       });
       if (!form) {
         throw { code: 404, message: "FORM_DELETE_FAILED" };

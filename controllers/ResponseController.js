@@ -12,7 +12,7 @@ class ResponseController {
       }
       const form = await Form.findOne({
         _id: req.params.formId,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       }).populate("answers");
       if (!form) {
         throw { code: 400, message: "FORM_NOT_FOUND" };
@@ -42,7 +42,7 @@ class ResponseController {
       }
       const form = await Form.findOne({
         _id: req.params.formId,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       }).populate("answers");
       if (!form) {
         throw { code: 400, message: "FORM_NOT_FOUND" };

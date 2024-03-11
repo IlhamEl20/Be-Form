@@ -15,7 +15,7 @@ class InviteController {
       // cek email yang di invite benar
       const form = await Form.findOne({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
       }).select("invites");
       if (!form) {
         throw { code: 400, message: "INVITES_NOT_FOUND" };
@@ -55,7 +55,7 @@ class InviteController {
       //email sdh di invite
       const emailInvited = await Form.findOne({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
         invites: { $in: req.body.email },
       });
       if (emailInvited) {
@@ -101,7 +101,7 @@ class InviteController {
       // cek email yang di invite benar
       const emailExist = await Form.findOne({
         _id: req.params.id,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
         invites: { $in: req.body.email },
       });
       if (!emailExist) {

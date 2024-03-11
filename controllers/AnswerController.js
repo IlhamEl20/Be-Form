@@ -59,7 +59,7 @@ class AnswerController {
       });
       const answers = await Answer.create({
         formId: req.params.formId,
-        userId: req.jwt.id,
+        userId: req.jwt.userId,
         ...fields,
       });
       if (!answers) {
